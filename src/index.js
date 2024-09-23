@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+import App from './App'; // Import the "App Component", to be injected into the DOM.
 
 // In javascript, get the root id file. This is where React will inject components, in the next block below.
 const root = ReactDOM.createRoot(document.getElementById('root'));
