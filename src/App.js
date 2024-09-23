@@ -1,8 +1,5 @@
 // This component can be treated as the "Parent" component for all other components. 
 
-//import logo from './logo.svg'; // Remove Logo
-import './App.css';
-
 // import the other React Components
 import Header from './Header'; // Path is relative to this file's directory
 import Content from './Content';
