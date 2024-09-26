@@ -4,7 +4,7 @@
 import Header from './Header'; // Path is relative to this file's directory
 import Content from './Content';
 import Footer from './Footer';
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; //Ch11 - Add useEffect
 import AddItem from './AddItem';
 import SearchItem from './SearchItem';
 
@@ -18,10 +18,10 @@ const App = () => {
   // To use these variables inside JSX, must use { }.
   // The use of { } signifies the use of a Javascript expression.
 
-
   /* Define variables to be used in useState */
   /* The following is called array destrucuting. */
   /* name is treated as a variable, setName is treated as a function  */
+
   const [items, setItems] = useState([
     // default data of the variable
     {
@@ -39,16 +39,31 @@ const App = () => {
       checked: false,
       item: "Item 3"
     }
-  ]);
+  ] || []); 
+  /* 
+    Initalize useState with an empty array (give it a default data type)
+    || is a "short circuit" operator. Basically checks if the first value is null, if true then returns the second type.
+  */
+
+
+  // only 1 source for new entries for the controlled input.
+  const [newItem, setNewItem] = useState(''); // can be empty string
+  const [search, setSearch] = useState(''); // can be empty string
+
+  useEffect(() => {
+    // This is where would put saving to local storage
+  }, [items]); 
+  /*
+    Only run the function when the dependency changes.
+    With empty dependencies ([]), useEffect will only be called at load-time
+      Ideal way to load data, especially if working with an API
+    Note: To prevent infintie loop, do not use the setData & data of a useState with useEffect. Pick one use.
+  */
 
   const setAndSaveItems = (newItems) => {
     setItems(newItems);
     console.log("List Saved and Updated");
   }
-
-  // only 1 source for new entries for the controlled input.
-  const [newItem, setNewItem] = useState(''); // can be empty string
-  const [search, setSearch] = useState(''); // can be empty string
 
   const addItem = (item) => {
     const id = items.length ? items[items.length - 1].id + 1 : 1;
