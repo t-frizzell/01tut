@@ -3,7 +3,9 @@
 
 import React from 'react'
 
-const Header = () => {
+// this is a "Component Function", so properties can be passed into the component.
+// passed properties can be "destructured". So (props) can be re-written to be ({title}) and referenced as {title   }
+const Header = (props) => {
     // This is an example of inline css
     // To use inline, use an "object" variable
     const headerStyle = {
@@ -19,9 +21,16 @@ const Header = () => {
         Best practice to use semantic HTML
         For this component, instead of <div>, use <header>
         */}
-            <h1>Groceries List</h1>
+
+            {/* Props hold all the different properties from the parent component that have been passed to the child component. */}
+            <h1>{props.title}</h1>
         </header>
     )
+}
+
+// Default prop values
+Header.defaultProps = {
+    title: "Default Title"
 }
 
 // Components need to be exported to import into other components.

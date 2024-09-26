@@ -3,14 +3,18 @@
 
 import React from 'react'
 
-const Footer = () => {
-    const today = new Date();   
+const Footer = ({ items }) => {
+  const today = new Date();
 
   return (
     <footer>
-        {/* In semantic HTML, footers use a footer element, not div */}
-        {/* Use Js Expression to reference today variable */}
-        <p>Copyright ©{today.getFullYear()}</p>
+      <p>
+        {items.length} List {items.length == 1 ? "Item" : "Items"}
+      </p>  
+
+      {/* In semantic HTML, footers use a footer element, not div */}
+      {/* Use Js Expression to reference today variable */}
+      <p>Copyright ©{today.getFullYear()}</p>
     </footer>
   )
 }
