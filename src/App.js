@@ -5,6 +5,8 @@ import Header from './Header'; // Path is relative to this file's directory
 import Content from './Content';
 import Footer from './Footer';
 import { useState } from 'react';
+import AddItem from './AddItem';
+import SearchItem from './SearchItem';
 
 // Components are represented by functions
 // Components use Arrow Functions by standard
@@ -39,6 +41,22 @@ const App = () => {
     }
   ]);
 
+  const setAndSaveItems = (newItems) => {
+    setItems(newItems);
+    console.log("List Saved and Updated");
+  }
+
+  // only 1 source for new entries for the controlled input.
+  const [newItem, setNewItem] = useState(''); // can be empty string
+  const [search, setSearch] = useState(''); // can be empty string
+
+  const addItem = (item) => {
+    const id = items.length ? items[items.length - 1].id + 1 : 1;
+    const _newItem = { id: id, checked: false, item: item };
+
+    const _listItems = [...items, _newItem];
+    setAndSaveItems(_listItems);
+  }
 
   //Functions can also be passed down with "prop drilling"
   const handleCheck = (id) => {
@@ -52,7 +70,7 @@ const App = () => {
     // there might be a better way of doing this, like indexing or using a for loop
 
     // The setItems function takes the entire, not just a single entry into the current array.
-    setItems(listItems);
+    setAndSaveItems(listItems);
   };
 
   const handleDelete = (id) => {
@@ -60,7 +78,16 @@ const App = () => {
     // Create a new array that has filtered out the item id that matches passed id parameter.
     // "Returns the elements of an array that meet the condition specified in a callback function."
     const listItems = items.filter((item) => item.id !== id);
-    setItems(listItems);
+    setAndSaveItems(listItems);
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Prevent submit from reloading the page.
+    if (!newItem) return; // If no newItem, exit function.
+
+    addItem(newItem);
+    //addItem function
+    setNewItem(''); // remove text from input box.
   }
 
   // The return statement inside functions (or "components") returns JSX.
@@ -74,14 +101,23 @@ const App = () => {
       {/* Properties are similar to how they are used in HTML elements */}
       <Header title="Groceries" />
 
+      <AddItem
+        newItem={newItem}
+        setNewItem={setNewItem}
+        handleSubmit={handleSubmit}
+      />
+      <SearchItem
+        search={search}
+        setSearch={setSearch}
+      />
       {/* Drill "pass" variables and functions down to child component */}
       <Content
-        items={items}
+        items={items.filter(i => ((i.item).toLowerCase()).includes(search.toLowerCase()))}
         setItems={setItems}
         handleCheck={handleCheck}
         handleDelete={handleDelete}
       />
-      <Footer items={items}/>
+      <Footer items={items} />
     </div>
   );
 }

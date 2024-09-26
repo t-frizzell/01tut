@@ -3,7 +3,7 @@ import React from 'react'
 // Functional Component for a single item in a list
 const LineItem = ({item, handleCheck, handleDelete}) => {
     return (
-        <li className="item" key={item.id}> {/* React needs keys for each list item */}
+        <li className="item"> {/* React needs keys for each list item */}
             <input type='checkbox' checked={item.checked} onChange={() => { handleCheck(item.id) }} />
             <label
                 onDoubleClick={() => { handleCheck(item.id) }}
