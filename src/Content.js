@@ -4,63 +4,92 @@ import { useState } from 'react';
 // Move arrow function from App.js into this Main.js component
 
 const Content = () => {
+
     // useState
     // variable, set function
 
     /* Define variables to be used in useState */
     /* The following is called array destrucuting. */
     /* name is treated as a variable, setName is treated as a function  */
-    const [name, setName] = useState('default_data'); // Provide default data when loaded.
-    /* Because `name` is set to a variable, it can be used directly in JSX */
-
-    // Another example of useState. 
-        // Remember, similar to a Rust tuple
-    const [count, setCount] = useState(0);
+    const [items, setItems] = useState([
+        // default data of the variable
+        {
+            id: 1,
+            checked: true,
+            item: "One half pound bag of ..."
+        },
+        {
+            id: 2,
+            checked: false,
+            item: "Item 2"
+        },
+        {
+            id: 3,
+            checked: false,
+            item: "Item 3"
+        }
+    ]);
+    // couldnt I create a struct instead of manually creating data like this?
 
     // Functions are created using const keyword
     // Standard practice is to create functions using arrow functions = () => {}
-    const handleNameChange = () => {
-        const names = ["bob", "kevin", "dave"];
-        const int = Math.floor(Math.random() * 3);
-        //return names[int]; 
 
-        // Instead of returning a random value, can set the value into useState
-        setName(names[int]);
+    const handleCheck = (id) => {
+        // passed id from the array list, which is the key of the list item.
+        console.log(`key id: ${id}`); // template literal: ${value}
+        
+        // To change the state, again use .map() to iterate through the array of items.
+            // iterate through an array using map
+            // Map is used to iterate through the array!
+        const listItems = items.map((item) => item.id == id ? {...item, checked: !item.checked} : item);
+            // there might be a better way of doing this, like indexing or using a for loop
+
+        // The setItems function takes the entire, not just a single entry into the current array.
+        setItems(listItems);
     };
 
-    // Remember, using an arrow function
-    const handleClick = () => {
-        setCount(count+2); // 0+2
-        setCount(count+2); // 0+2 again. This will do the same thing, because it is referencing the same value that was initially brought into the function.
-
-        // use the count variable from useState
-        // ❗ returning useState variable will return the value it held when the function was called.
-        console.log(count); 
-    };
-    const handleClick2 = (name) => {
-        console.log(`${name} was clicked`); // use a template literal
-    };
+    const handleDelete = (id) => {
+        // Iterate through the items by using another higher order function, .filter()
+            // Create a new array that has filtered out the item id that matches passed id parameter.
+            // "Returns the elements of an array that meet the condition specified in a callback function."
+        const listItems = items.filter((item) => item.id !== id);
+        setItems(listItems);
+    }
 
     return (
         <main>
-            <p onDoubleClick={() => {handleClick()}}>
-                {/* Instead of <div>, using <main> because this is the main content of the page */}
-                Hello {name}
-            </p>
+                {/* To pass in arguments / parameters to functions from properties, use an anonymous function () => {} */}
 
-            {/* Without using an event (button & click), functions are invoked when the page loads. */}
-            <button onClick={handleNameChange}>
-                {/* 
-                    We are using a reference to handleClick, by the lack of parenthesis.
-                    If parenthesis were used, the function would be invoked automatically.
-                */}
+                {/* Display the javascript array in JSX with an unordered list. */}
+                {/* An unordered list begins with an HTML element <ul> */}
+            {items.length ? (
+                <ul>
+                    {/* inside JSX, we need an expression to display the data */}
+                    {/* To iterate through the array, need to use .map() (a higher order function)*/}
+                    {/* Remember to always practice using arrow functions () => {} */}
 
-                {/* Buttons by default should have some text */}
-                Change Name with useState!
-            </button>
+                    {/* Begin automatically, do not use arrow function in beginning */}
+                        {/* Each item will be a list item (<li></li>) */}
+                        {/* Give each list a class name PROPERTY */}
 
-            {/* To pass in arguments / parameters to functions from properties, use an anonymous function () => {} */}
-            <button onClick={() => {handleClick()}}> Change the count!</button>
+                    {/* HTML Attribute values can be set using JSX expressions (checked, key, etc...) */}
+                    {items.map((item) => (
+                        <li className="item" key={item.id}> {/* React needs keys for each list item */}
+                            <input type='checkbox' checked={item.checked} onChange={() => {handleCheck(item.id)}}/>
+                            <label 
+                                onDoubleClick={() => {handleCheck(item.id)}}
+                                style={(item.checked) ? {textDecoration: 'line-through'} : null} 
+                            > {item.item} </label> {/* Display the label with a JS Expression */}
+                            <button onClick={() => {handleDelete(item.id)}}>Delete</button>
+                        </li>
+                        
+                    ))}
+                </ul>
+            ) : (
+                <p style={{marginTop: '2rem'}}>
+                    List is empty
+                </p>
+            )}
         </main>
     )
 }

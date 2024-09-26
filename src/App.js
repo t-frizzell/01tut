@@ -21,6 +21,7 @@ const App = () => {
     // Expressions can use data types, variables, functions
   return (
     <div className="App">
+      {/* Components */}
       <Header />   
       <Content />
       <Footer />
