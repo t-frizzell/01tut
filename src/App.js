@@ -11,35 +11,13 @@ import SearchItem from './SearchItem';
 // Components are represented by functions
 // Components use Arrow Functions by standard
 const App = () => {
-  // Crate a new javascript variable, can be used inside JSX return statement.
-  // JSX renders strings and integers as text in the web view.
-  const name = "Drake";
-  const number = 10;
-  // To use these variables inside JSX, must use { }.
-  // The use of { } signifies the use of a Javascript expression.
+  const API_URL = "http://localhost:3500/items"; // This url will not change for this project
 
   /* Define variables to be used in useState */
   /* The following is called array destrucuting. */
   /* name is treated as a variable, setName is treated as a function  */
 
-  const [items, setItems] = useState([
-    // default data of the variable
-    {
-      id: 1,
-      checked: true,
-      item: "One half pound bag of ..."
-    },
-    {
-      id: 2,
-      checked: false,
-      item: "Item 2"
-    },
-    {
-      id: 3,
-      checked: false,
-      item: "Item 3"
-    }
-  ] || []); 
+  const [items, setItems] = useState([]); // Keep the empty array, the default value type for items.
   /* 
     Initalize useState with an empty array (give it a default data type)
     || is a "short circuit" operator. Basically checks if the first value is null, if true then returns the second type.
@@ -50,9 +28,34 @@ const App = () => {
   const [newItem, setNewItem] = useState(''); // can be empty string
   const [search, setSearch] = useState(''); // can be empty string
 
+  //setup fetch error with useState
+  const [fetchError, setFetchError] = useState(null); 
+  const [isLoading, setIsLoading] = useState(true); // Initally true
+
   useEffect(() => {
-    // This is where would put saving to local storage
-  }, [items]); 
+    // Use async and await, along with fetch
+    const fetchItems = async () => {
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw Error("Did not receive expected data"); // ok = 200, not ok = 404
+        setFetchError(null);
+        
+        const listItems = await response.json();
+        setItems(listItems);
+      } catch (err) {
+        setFetchError(err);
+        console.log(err.message); //stack or message
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    setTimeout(() => { // simulate a large loading time
+      // Call the async function. Note it does not return a value.
+      fetchItems();
+    }, 2000);
+
+  }, []); // execute useEffect at load.
   /*
     Only run the function when the dependency changes.
     With empty dependencies ([]), useEffect will only be called at load-time
@@ -125,13 +128,17 @@ const App = () => {
         search={search}
         setSearch={setSearch}
       />
-      {/* Drill "pass" variables and functions down to child component */}
-      <Content
-        items={items.filter(i => ((i.item).toLowerCase()).includes(search.toLowerCase()))}
-        setItems={setItems}
-        handleCheck={handleCheck}
-        handleDelete={handleDelete}
-      />
+      <main>
+        {isLoading && <p>Loading Items...</p>}
+        {fetchError && <p style={{color: "red"}}>{`${fetchError}`}</p>}
+        {/* Drill "pass" variables and functions down to child component */}
+        {!fetchError && !isLoading && <Content
+          items={items.filter(i => ((i.item).toLowerCase()).includes(search.toLowerCase()))}
+          setItems={setItems}
+          handleCheck={handleCheck}
+          handleDelete={handleDelete}
+        /> }
+      </main>
       <Footer items={items} />
     </div>
   );

@@ -7,7 +7,10 @@ import ItemList from './ItemList'
 const Content = ({items, setItems, handleCheck, handleDelete}) => {
 
     return (
-        <main>
+        <>
+        {/* changed <main> into a "fragment" */}
+        {/* Anything inside JSX needes to be in a "parent" element, or an element container. */}
+
                 {/* To pass in arguments / parameters to functions from properties, use an anonymous function () => {} */}
 
                 {/* Display the javascript array in JSX with an unordered list. */}
@@ -23,7 +26,7 @@ const Content = ({items, setItems, handleCheck, handleDelete}) => {
                     List is empty
                 </p>
             )}
-        </main>
+        </>
     )
 }
 
