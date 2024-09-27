@@ -7,6 +7,7 @@ import Footer from './Footer';
 import { useState, useEffect } from 'react'; //Ch11 - Add useEffect
 import AddItem from './AddItem';
 import SearchItem from './SearchItem';
+import apiRequest from './APIRequest';
 
 // Components are represented by functions
 // Components use Arrow Functions by standard
@@ -33,7 +34,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true); // Initally true
 
   useEffect(() => {
-    // Use async and await, along with fetch
+    // Use async and await, along with fetch ("Read" in CRUD)
     const fetchItems = async () => {
       try {
         const response = await fetch(API_URL);
@@ -50,10 +51,8 @@ const App = () => {
       }
     }
 
-    setTimeout(() => { // simulate a large loading time
-      // Call the async function. Note it does not return a value.
-      fetchItems();
-    }, 2000);
+    // Call the async function. Note it does not return a value.
+    fetchItems();
 
   }, []); // execute useEffect at load.
   /*
@@ -68,35 +67,65 @@ const App = () => {
     console.log("List Saved and Updated");
   }
 
-  const addItem = (item) => {
+  const addItem = async (item) => {
     const id = items.length ? items[items.length - 1].id + 1 : 1;
     const _newItem = { id: id, checked: false, item: item };
 
     const _listItems = [...items, _newItem];
     setAndSaveItems(_listItems);
+
+    // update REST API, POST request
+    const postOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(_newItem) // only send the new item
+    }
+
+    const result = await apiRequest(API_URL, postOptions);
+    if (result) setFetchError(result);
   }
 
   //Functions can also be passed down with "prop drilling"
-  const handleCheck = (id) => {
+  const handleCheck = async (id) => {
     // passed id from the array list, which is the key of the list item.
     console.log(`key id: ${id}`); // template literal: ${value}
 
     // To change the state, again use .map() to iterate through the array of items.
     // iterate through an array using map
     // Map is used to iterate through the array!
-    const listItems = items.map((item) => item.id == id ? { ...item, checked: !item.checked } : item);
+    const listItems = items.map((item) => item.id === id ? { ...item, checked: !item.checked } : item);
     // there might be a better way of doing this, like indexing or using a for loop
 
     // The setItems function takes the entire, not just a single entry into the current array.
     setAndSaveItems(listItems);
+
+    // update Rest API, Get request
+    const myItem = listItems.filter((item) => item.id === id);
+    const updateOptions = {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ checked: myItem[0].checked }) //myItem[0].checked
+    };
+    const reqUrl = `${API_URL}/${id}`; // Update the specific index with PATCH (localhost:3500/items/5 (with index 5))
+    const result = await apiRequest(reqUrl, updateOptions);
+    if (result) setFetchError(result); // if error is not null...
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     // Iterate through the items by using another higher order function, .filter()
     // Create a new array that has filtered out the item id that matches passed id parameter.
     // "Returns the elements of an array that meet the condition specified in a callback function."
     const listItems = items.filter((item) => item.id !== id);
     setAndSaveItems(listItems);
+
+    const deleteOptions = {method: 'DELETE'};
+    const reqURL = `${API_URL}/${id}`;
+    const result = await apiRequest(reqURL, deleteOptions);
+    if (result) setFetchError(result);
   }
 
   const handleSubmit = (e) => {
